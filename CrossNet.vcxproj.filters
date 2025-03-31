@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\server">
+      <UniqueIdentifier>{7540c6e4-2ad8-40a6-be50-9962546417d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\client">
+      <UniqueIdentifier>{35f0a62e-044a-408a-9531-8d8b2ddfb403}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\server">
+      <UniqueIdentifier>{190e8302-7275-471c-8410-0cdfb0a0dab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers sources\client">
+      <UniqueIdentifier>{28a2d66b-96f2-43de-9ced-9ca4fc84d380}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="server\winserver.h">
+      <Filter>Fichiers d%27en-tête\server</Filter>
+    </ClInclude>
+    <ClInclude Include="client\winclient.h">
+      <Filter>Fichiers d%27en-tête\client</Filter>
+    </ClInclude>
+    <ClInclude Include="win.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="crossnet.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server.h">
+      <Filter>Fichiers d%27en-tête\server</Filter>
+    </ClInclude>
+    <ClInclude Include="defs.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="client\client.h">
+      <Filter>Fichiers d%27en-tête\client</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="server\winserver.c">
+      <Filter>Fichiers sources\server</Filter>
+    </ClCompile>
+    <ClCompile Include="client\winclient.c">
+      <Filter>Fichiers sources\client</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="client\client.c">
+      <Filter>Fichiers sources\client</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="readme.md">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+  </ItemGroup>
+</Project>
