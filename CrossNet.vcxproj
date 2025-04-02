@@ -127,11 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="client\client.h" />
+    <ClInclude Include="client.h" />
     <ClInclude Include="client\winclient.h" />
     <ClInclude Include="crossnet.h" />
     <ClInclude Include="defs.h" />
-    <ClInclude Include="server\server.h" />
+    <ClInclude Include="server.h" />
     <ClInclude Include="server\winserver.h" />
     <ClInclude Include="win.h" />
   </ItemGroup>
