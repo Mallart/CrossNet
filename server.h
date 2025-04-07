@@ -14,6 +14,9 @@
 * 
 */
 
-
+/* Initialiaze a server socket with informations given by the socket in parameter */
+CN_SOCKET_PTR init_server(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family);
+/* Configure a server socket to listen a certain amount of connections */
+void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue);
 
 #endif // !CN_SERVER

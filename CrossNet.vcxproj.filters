@@ -48,6 +48,9 @@
     <ClInclude Include="server.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="cn_errors.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="server\winserver.c">
@@ -61,6 +64,12 @@
     </ClCompile>
     <ClCompile Include="client\client.c">
       <Filter>Fichiers sources\client</Filter>
+    </ClCompile>
+    <ClCompile Include="defs.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="cn_errors.c">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
