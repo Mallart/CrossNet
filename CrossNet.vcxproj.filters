@@ -39,14 +39,17 @@
     <ClInclude Include="crossnet.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="server\server.h">
-      <Filter>Fichiers d%27en-tête\server</Filter>
-    </ClInclude>
     <ClInclude Include="defs.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="client\client.h">
-      <Filter>Fichiers d%27en-tête\client</Filter>
+    <ClInclude Include="client.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="server.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="cn_errors.h">
+      <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +64,12 @@
     </ClCompile>
     <ClCompile Include="client\client.c">
       <Filter>Fichiers sources\client</Filter>
+    </ClCompile>
+    <ClCompile Include="defs.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="cn_errors.c">
+      <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
