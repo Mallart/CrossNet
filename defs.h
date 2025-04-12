@@ -144,6 +144,9 @@ typedef struct cn_socket
 	uint16_t port;
 	E_SOCKET_TYPE type;
 	E_PROTOCOL protocol;
+	/* To implement: for multithreading */
+	thrd_t bound_thread;	// Thread used to send or receive data on this socket
+	uint8_t signal;			// Received signal. Can be to shut down the thread, to fork it...
 } CN_SOCKET;
 
 typedef uint64_t CN_SOCKET_PTR;
