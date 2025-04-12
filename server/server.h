@@ -17,11 +17,12 @@
 typedef enum SERVER_SHUTDOWN_PROHIBITS
 {
 	// prohibits server receiving data
-	CN_SERVER_RECEIVE,
+	CN_SERVER_PROHIBIT_RECEIVE,
 	// prohibits server sending data
-	CN_SERVER_SEND,
+	CN_SERVER_PROHIBIT_SEND,
 	// prohibits all server communication
-	CN_SERVER_RECEIVE_SEND
+	CN_SERVER_PROHIBIT_RECEIVE_SEND,
+	CN_SERVER_PROHIBIT_BOTH = CN_SERVER_PROHIBIT_RECEIVE_SEND,
 } CN_SERVER_SHUTDOWN_PROHIBITS;
 
 struct 
@@ -31,7 +32,7 @@ struct
 } server_config;
 
 /* Initialiaze a server socket with informations given by the socket in parameter */
-CN_SOCKET_PTR init_server(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family);
+CN_SOCKET_PTR server_init(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family);
 /* Configure a server socket to listen a certain amount of connections */
 void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue);
 /* Configure a stream to log server errors, warnings and all. */

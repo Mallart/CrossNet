@@ -1,6 +1,13 @@
 #ifndef CN_DEFS
 #define CN_DEFS
 
+#pragma warning(disable:4068)
+#define _UCRT_DISABLED_WARNINGS 4324 _UCRT_DISABLED_WARNING_4412 4514 4574 4710 4793 4820 4995 4996 28719 28726 28727 _UCRT_EXTRA_DISABLED_WARNINGS
+#define _UCRT_DISABLED_WARNING_4412 
+#define _UCRT_DISABLE_CLANG_WARNINGS _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"") _Pragma("clang diagnostic ignored \"-Wignored-attributes\"") _Pragma("clang diagnostic ignored \"-Wignored-pragma-optimize\"") _Pragma("clang diagnostic ignored \"-Wunknown-pragmas\"")
+#define _UCRT_EXTRA_DISABLED_WARNINGS 
+#define _UCRT_RESTORE_CLANG_WARNINGS _Pragma("clang diagnostic pop")
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -8,6 +15,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdarg.h>
+#include <threads.h>
 
 #include "cn_errors.h"
 
@@ -16,6 +24,7 @@
 */
 
 /*	Enums are prefixed with 'E_', and all structs are perfixed with 'cn_'.
+*	Error codes are prfixed with 'CNE_'
 */
 
 typedef enum cn_address_family

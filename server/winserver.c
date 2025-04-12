@@ -6,7 +6,7 @@ void display_error(uint64_t error)
 	WSACleanup();
 }
 
-CN_SOCKET_PTR init_server(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family)
+CN_SOCKET_PTR server_init(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family)
 {
 	struct cn_addrinfo
 		*r = 0,
@@ -52,13 +52,13 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 	if (!Socket->id)
 	{
 		server_log("Uninitialized socket passed in parameter. Server didn't start.\n");
-		return;
+		return CNE_INVALID_SOCKET;
 	}
 	if (listen(Socket->id, SOMAXCONN) == CN_SOCKET_ERROR) {
 		server_log("Listen failed with error: %ld\n", WSAGetLastError());
 		closesocket(Socket->id);
 		WSACleanup();
-		return 1;
+		return CNE_CANNOT_LISTEN_ON_PORT;
 	}
 	CN_SOCKET_PTR client = CN_INVALID_SOCKET;
 	/*
@@ -77,10 +77,13 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 
 void server_shutdown(CN_SOCKET* Socket, CN_SERVER_SHUTDOWN_PROHIBITS prohibits)
 {
-	uint64_t error = shutdown(Socket->id, SD_SEND);
+	uint64_t error = shutdown(Socket->id, prohibits);
 	if (error)
 	{
 		server_error("An unhandled exception occured and prevented the server shutdown.\nCode: %d\n", error);
 		WSACleanup();
+		return;
 	}
+	WSACleanup();
+	server_log("Server with id %llu has been successfully shut down.\n", Socket->id);
 }
