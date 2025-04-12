@@ -47,15 +47,16 @@ CN_SOCKET_PTR server_init(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family)
 	return (Socket->id = server);
 }
 
-void server_accept(CN_SOCKET* Socket)
+static int server_accept(void* socket)
 {
+	CN_SOCKET* Socket = socket;
 	if (!Socket)
 	{
 		server_error("Socket has been null, cannot use it to listen. Shutting down thread.");
 		thrd_exit(CNE_NULL_POINTER_DEREFERENCED);
-		return;
+		return CNE_NULL_POINTER_DEREFERENCED;
 	}
-	server_log("Began listening and accepting on port %d...\n", Socket->port);
+	server_log("%d began listening and accepting on port %d...\n", Socket->id, Socket->port);
 	CN_SOCKET_PTR client = CN_INVALID_SOCKET;
 	for (;;)
 	{
@@ -66,6 +67,7 @@ void server_accept(CN_SOCKET* Socket)
 			server_error("Couldn't accept a client connection; an unhandled error occured.\nServer is still running.\n");
 		}
 	}
+	return 0;
 }
 
 void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
@@ -85,7 +87,7 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 		TODO: run this on another thread
 	*/
 	thrd_t listen_socket;
-	int ilisten_socket = thrd_create(&listen_socket, server_accept, 0);
+	int ilisten_socket = thrd_create(&listen_socket, &server_accept, (void*)Socket);
 	if (ilisten_socket == thrd_error)
 	{
 		server_log("Couldn't instantiate another thread to listen for incoming connections. Shutting down.\n");
@@ -93,6 +95,8 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 		thrd_join(listen_socket, &thrr);
 		exit(CNE_CANNOT_LISTEN_ON_PORT);
 	}
+	server_log("%d began listening on port %d\n", Socket->id, Socket->port);
+	thrd_detach(listen_socket);
 }
 
 void server_shutdown(CN_SOCKET* Socket, CN_SERVER_SHUTDOWN_PROHIBITS prohibits)

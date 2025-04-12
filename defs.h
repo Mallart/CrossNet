@@ -110,6 +110,7 @@ typedef enum cn_protocol
 	CN_PROTOCOL_RESERVED_MAX = 261 // Reserved for internal use by Windows.
 } E_PROTOCOL;
 
+/* NOT USED */
 typedef struct cn_ser_state
 {
 	/* If the server has been started or not */
@@ -140,13 +141,13 @@ typedef uint16_t CN_PORT;
 
 typedef struct cn_socket
 {
-	uint64_t id;
-	uint16_t port;
-	E_SOCKET_TYPE type;
-	E_PROTOCOL protocol;
-	/* To implement: for multithreading */
-	thrd_t bound_thread;	// Thread used to send or receive data on this socket
+	thrd_t* bound_thread;	// Thread used to send or receive data on this socket
+	uint64_t id;			// The socket id used by the OS
+	E_PROTOCOL protocol;	// Protocol used by this socket to communicate
+	E_SOCKET_TYPE type;		// What socket type is this socket.
+	uint16_t port;			// Port used by this socket.
 	uint8_t signal;			// Received signal. Can be to shut down the thread, to fork it...
+	mtx_t mutex;			// Used for synchronization between threads
 } CN_SOCKET;
 
 typedef uint64_t CN_SOCKET_PTR;
