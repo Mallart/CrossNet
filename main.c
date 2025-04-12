@@ -1,8 +1,9 @@
-#include "client.h"
-#include "server.h"
+#include "./client/client.h"
+#include "./server/server.h"
 
 void server(void)
 {
+	server_setup_log(stdout, stderr);
 	CN_SOCKET _server =
 	{
 		.id = 0,
@@ -16,5 +17,6 @@ void server(void)
 
 int main(void)
 {
+	server();
 	return 0;
 }

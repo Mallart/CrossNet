@@ -142,6 +142,7 @@
     <ClCompile Include="defs.c" />
     <ClCompile Include="cn_errors.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="server\server.c" />
     <ClCompile Include="server\winserver.c" />
   </ItemGroup>
   <ItemGroup>

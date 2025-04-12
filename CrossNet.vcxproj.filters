@@ -42,14 +42,14 @@
     <ClInclude Include="defs.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="client.h">
+    <ClInclude Include="cn_errors.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="server.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+      <Filter>Fichiers d%27en-tête\server</Filter>
     </ClInclude>
-    <ClInclude Include="cn_errors.h">
-      <Filter>Fichiers d%27en-tête</Filter>
+    <ClInclude Include="client.h">
+      <Filter>Fichiers d%27en-tête\client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="cn_errors.c">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="server\server.c">
+      <Filter>Fichiers sources\client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
