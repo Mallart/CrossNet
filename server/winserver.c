@@ -56,16 +56,20 @@ static int server_accept(void* socket)
 		thrd_exit(CNE_NULL_POINTER_DEREFERENCED);
 		return CNE_NULL_POINTER_DEREFERENCED;
 	}
+	mtx_lock(&Socket->mutex);
 	server_log("%d began listening and accepting on port %d...\n", Socket->id, Socket->port);
+	mtx_unlock(&Socket->mutex);
 	CN_SOCKET_PTR client = CN_INVALID_SOCKET;
 	for (;;)
 	{
+		mtx_lock(&Socket->mutex);
 		// client socket acception
 		client = accept(Socket->id, 0, 0);
 		if (client == CN_INVALID_SOCKET)
 		{
 			server_error("Couldn't accept a client connection; an unhandled error occured.\nServer is still running.\n");
 		}
+		mtx_unlock(&Socket->mutex);
 	}
 	return 0;
 }
@@ -87,15 +91,18 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 		TODO: run this on another thread
 	*/
 	thrd_t listen_socket;
+	/*
+	server_accept(Socket);
+	*/
 	int ilisten_socket = thrd_create(&listen_socket, &server_accept, (void*)Socket);
-	if (ilisten_socket == thrd_error)
+	if (ilisten_socket)
 	{
 		server_log("Couldn't instantiate another thread to listen for incoming connections. Shutting down.\n");
 		int thrr;
 		thrd_join(listen_socket, &thrr);
 		exit(CNE_CANNOT_LISTEN_ON_PORT);
 	}
-	server_log("%d began listening on port %d\n", Socket->id, Socket->port);
+	server_log("Main thread: %d began listening on port %d\n", Socket->id, Socket->port);
 	thrd_detach(listen_socket);
 }
 
