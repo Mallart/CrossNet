@@ -10,7 +10,6 @@ CN_SOCKET_PTR server_init(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family)
 {
 	struct cn_addrinfo
 		*r = 0,
-		*ptr = 0,
 		hints =
 	{
 		.ai_family = ai_family,
@@ -42,11 +41,13 @@ CN_SOCKET_PTR server_init(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family)
 	if (error)
 	{
 		server_error("bind failed with error: %d\n", WSAGetLastError());
+		memset(r, 0, sizeof(*r));
 		freeaddrinfo(r);
 		closesocket(server);
 		WSACleanup();
 		return 0;
 	}
+	memset(r, 0, sizeof(*r));
 	freeaddrinfo(r);
 	server_log("Server is turned on !\n");
 	return (Socket->id = server);

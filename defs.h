@@ -8,7 +8,7 @@ For instance, 1.2.45 is the first release version, 2nd major update, patch numbe
 #define CN_VER "0.0.1"
 #define CN_VER_REL 0
 #define CN_VER_MAJ 0
-#define CN_VER_PAT 2
+#define CN_VER_PAT 3
 
 #pragma warning(disable:4068)
 #define _UCRT_DISABLED_WARNINGS 4324 _UCRT_DISABLED_WARNING_4412 4514 4574 4710 4793 4820 4995 4996 28719 28726 28727 _UCRT_EXTRA_DISABLED_WARNINGS
@@ -194,11 +194,40 @@ typedef struct cn_addrinfo {
 	int             ai_family;
 	int             ai_socktype;
 	int             ai_protocol;
-	size_t          ai_addrlen;
+	uint64_t		ai_addrlen;
 	char* ai_canonname;
 	struct cn_sockaddr* ai_addr;
 	struct addrinfo* ai_next;
 } cn_addrinfo, CN_ADDRINFOA, * CN_PADDRINFOA;
+
+typedef struct sockaddr_in6 SOCKADDR_IN6;
+typedef struct sockaddr_in6* PSOCKADDR_IN6;
+#ifdef _WIN32
+typedef struct sockaddr_in6* LPSOCKADDR_IN6;
+#endif
+
+typedef struct cn_in6_addr {
+	union {
+		uint8_t       Byte[16];
+		uint16_t      Word[8];
+	} u;
+} cn_in6_addr, CN_IN6_ADDR, * PCN_IN6_ADDR, *LPCN_IN6_ADDR;
+
+typedef struct cn_sockaddr_in6 {
+	int16_t   sin6_family;
+	uint16_t sin6_port;
+	uint32_t  sin6_flowinfo;
+	cn_in6_addr sin6_addr;
+	uint32_t  sin6_scope_id;
+} cn_sockaddr_in6;
+
+
+typedef struct cn_sockaddr_in6_old {
+	short   sin6_family;
+	uint16_t sin6_port;
+	uint32_t  sin6_flowinfo;
+	cn_in6_addr sin6_addr;
+} cn_sockaddr_in6_old;
 
 // converts a string into a numerical representation of a port.
 CN_PORT str_to_port(char* port);

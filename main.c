@@ -1,8 +1,15 @@
 #include "./client/client.h"
 #include "./server/server.h"
 
+/*
+
+TODO: upcoming features
+- ipv6 support
+
+*/
+
 // This runs a basic server for 5 sec.
-int server(void)
+void server(void)
 {
 	server_setup_log(stdout, stderr);
 	CN_SOCKET _server =
@@ -21,7 +28,7 @@ int server(void)
 }
 
 // This runs a basic client that reaches to the examples server.
-int client(void)
+void client(void)
 {
 	return 0;
 }
