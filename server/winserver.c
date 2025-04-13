@@ -61,6 +61,9 @@ static int server_accept(void* socket)
 		return;
 	}
 	CN_SOCKET* Socket = socket;
+	/*Sets to non-blocking mode to efficiently shut down the server*/
+	uint32_t mode = 1;
+	ioctlsocket(Socket->id, FIONBIO, &mode);
 	if (!Socket)
 	{
 		server_error("Socket has been null, cannot use it to listen. Shutting down thread.\n");
@@ -75,13 +78,10 @@ static int server_accept(void* socket)
 		if (!clientInfo)
 			thrd_exit(CNE_NOT_ENOUGH_MEMORY);
 		mtx_lock(Socket->mutex);
-		server_log("Waiting for a client to accept...\n");
-		// client socket acception
-		// TODO: fix access violation, writing on memory address 0xA
 		Socket->remote = accept(Socket->id, clientInfo, 0);
 		mtx_unlock(Socket->mutex);
 		if (Socket->remote == CN_INVALID_SOCKET)
-			server_error("The server has been stopped.\n");
+			;
 		else
 		{
 			server_log("Accepted client %d.%d.%d.%d on port %d.\n",
@@ -91,12 +91,13 @@ static int server_accept(void* socket)
 				clientInfo->sin_addr.S_un.S_un_b.s_b4,
 				clientInfo->sin_port
 			);
+			// send / receive data
 		}
+		free(clientInfo);
 	}
 	WSACleanup();
 	server_log("Socket %d running on port %d does not accept connections anymore and is shutting down...\n", Socket->id, Socket->port);
 	thrd_exit(0);
-	return 0;
 }
 
 void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
@@ -123,24 +124,9 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 		thrd_join(listen_socket, &thrr);
 		exit(CNE_CANNOT_LISTEN_ON_PORT);
 	}
-	server_log("Main thread: Socket %d began listening on port %d\n", Socket->id, Socket->port);
 	thrd_detach(listen_socket);
 }
 
-void server_shutdown(CN_SOCKET* Socket, CN_SERVER_SHUTDOWN_PROHIBITS prohibits)
-{
-	Socket->signal = CN_SERVER_SHUTDOWN;
-	mtx_lock(Socket->mutex);
-	int err = closesocket(Socket->id);
-	mtx_unlock(Socket->mutex);
-	if (err)
-	{
-		server_error("An error occured while shutting down the server: Code: %d\n", WSAGetLastError());
-	}
-	WSACleanup();
-	server_log("Server with id %llu has been successfully shut down.\n", Socket->id);
-	mtx_destroy(Socket->mutex);
-}
 
 int server_send(CN_SOCKET* Server, int8_t* buffer, uint64_t length)
 {
@@ -175,4 +161,35 @@ int server_receive(CN_SOCKET* Server, int8_t* buffer, uint64_t capacity)
 		thrd_exit(CNE_SERVER_CANNOT_RECEIVE);
 	}
 	return 0;
+}
+
+void server_shutdown(CN_SOCKET* Socket, CN_SERVER_SHUTDOWN_PROHIBITS prohibits)
+{
+	Socket->signal = CN_SERVER_SHUTDOWN;
+	fd_set connected;
+	FD_ZERO(&connected);
+	FD_SET(Socket->id, &connected);
+	mtx_lock(Socket->mutex);
+	/*	checks if the socket is connected; if so, shuts it down. 
+		keeps 30µs to check the socket writeability, then closes it.
+	*/
+	int writeable = select(0, 0, &connected, 0, &(struct timeval){.tv_usec=30});
+	if (writeable)
+		if (shutdown(Socket->id, CN_SERVER_PROHIBIT_RECEIVE_SEND))
+		{
+			server_log("An error occurred while trying to shut down a server socket connection. Socket id: %d | port: %d\nError code: %d\nRetrying...\n", Socket->id, Socket->port, WSAGetLastError());
+			mtx_unlock(Socket->mutex);
+			server_shutdown(Socket, prohibits);
+			return;
+		}
+	int err = closesocket(Socket->id);
+	mtx_unlock(Socket->mutex);
+	if (err)
+	{
+		server_error("An error occured while shutting down the server %d on port %d: Code: %d\n", Socket->id, Socket->port, WSAGetLastError());
+	}
+	WSACleanup();
+	server_log("Server with id %llu running on port %d has been successfully shut down.\n", Socket->id, Socket->port);
+	mtx_destroy(Socket->mutex);
+	memset(Socket, 0, sizeof(CN_SOCKET));
 }

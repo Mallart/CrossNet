@@ -45,11 +45,11 @@
     <ClInclude Include="cn_errors.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="server.h">
-      <Filter>Fichiers d%27en-tête\server</Filter>
-    </ClInclude>
-    <ClInclude Include="client.h">
+    <ClInclude Include="client\client.h">
       <Filter>Fichiers d%27en-tête\client</Filter>
+    </ClInclude>
+    <ClInclude Include="server\server.h">
+      <Filter>Fichiers d%27en-tête\server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -15,7 +15,7 @@ void server(void)
 	// _server->id is now set to the appropriate value
 	server_init(&_server, CN_ADDRESS_FAMILY_INET, CN_PROTOCOL_TCP);
 	server_listen(&_server, 0xff);
-	thrd_sleep(&(struct timespec) { .tv_sec = 5 }, 0);
+	thrd_sleep(&(struct timespec) { .tv_sec = 15 }, 0);
 	server_shutdown(&_server, CN_SERVER_PROHIBIT_SEND);
 }
 
