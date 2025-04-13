@@ -15,6 +15,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdarg.h>
+#include <time.h>
 #include <threads.h>
 
 #include "cn_errors.h"
@@ -138,24 +139,46 @@ typedef struct cn_cli_state
 
 typedef uint16_t CN_PORT;
 
+typedef uint32_t CN_SOCKET_PTR;
 
 typedef struct cn_socket
 {
-	thrd_t* bound_thread;	// Thread used to send or receive data on this socket
-	uint64_t id;			// The socket id used by the OS
+	CN_SOCKET_PTR id;		// The socket id used by the OS
+	CN_SOCKET_PTR remote;	// Used by server sockets to know where to send and receive data.
+	mtx_t* mutex;			// Used for synchronization between threads
 	E_PROTOCOL protocol;	// Protocol used by this socket to communicate
 	E_SOCKET_TYPE type;		// What socket type is this socket.
 	uint16_t port;			// Port used by this socket.
-	uint8_t signal;			// Received signal. Can be to shut down the thread, to fork it...
-	mtx_t mutex;			// Used for synchronization between threads
+	volatile uint8_t signal;			// Received signal. Can be to shut down the thread, to fork it...
 } CN_SOCKET;
 
-typedef uint64_t CN_SOCKET_PTR;
 
 struct cn_sockaddr {
 	uint8_t  sa_family;
 	char    sa_data[14];
 };
+
+typedef struct c_in_addr {
+	union {
+		struct { uint8_t s_b1, s_b2, s_b3, s_b4; } S_un_b;
+		struct { uint16_t s_w1, s_w2; } S_un_w;
+		uint32_t S_addr;
+	} S_un;
+	} C_IN_ADDR, * PC_IN_ADDR, * LPC_IN_ADDR;
+
+
+typedef struct cn_sockaddr_in {
+
+#if(_WIN32_WINNT < 0x0600)
+	short   sin_family;
+#else //(_WIN32_WINNT < 0x0600)
+	uint16_t sin_family;
+#endif //(_WIN32_WINNT < 0x0600)
+
+	uint16_t sin_port;
+	C_IN_ADDR sin_addr;
+	char sin_zero[8];
+} cn_sockaddr_in, CN_SOCKADDR_IN, *PCN_SOCKADDR_IN;
 
 typedef struct cn_addrinfo {
 	int             ai_flags;

@@ -25,6 +25,12 @@ typedef enum SERVER_SHUTDOWN_PROHIBITS
 	CN_SERVER_PROHIBIT_BOTH = CN_SERVER_PROHIBIT_RECEIVE_SEND,
 } CN_SERVER_SHUTDOWN_PROHIBITS;
 
+typedef enum SERVER_SIGNAL
+{
+	CN_SERVER_CONTINUE, // Indicates to the server to continue its work, nothing in particular is happening
+	CN_SERVER_SHUTDOWN, // Telling the server it has to shutdown
+} CN_SERVER_SIGNAL;
+
 struct 
 {
 	FILE* server_stream;
@@ -39,6 +45,8 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue);
 void server_setup_log(FILE* stream, FILE* error_stream);
 /* Shuts down the given server */
 void server_shutdown(CN_SOCKET* Socket, CN_SERVER_SHUTDOWN_PROHIBITS prohibits);
+
+// TODO: send data and receive data
 
 
 /* Logs a message in the server log */
