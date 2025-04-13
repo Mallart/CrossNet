@@ -23,10 +23,14 @@ typedef enum CN_ERROR
 	CNE_SERVER_ERROR = CN_SERVER_ERROR,			// Generic error from server. Must be a conception error.
 	CNE_TOO_MUCH_CONNECTIONS_IN_QUEUE,			// Too much connections are waiting in queue and the server cannot accept one more.
 	CNE_CANNOT_LISTEN_ON_PORT,					// The operating system prevented the software to listen on that port.
+	CNE_SERVER_CANNOT_RECEIVE,					// An error prevented the server socket to receive data.
+	CNE_SERVER_CANNOT_SEND,						// An error prevented the server socket to send data.
 
 	/* Errors related to clients */
 	CNE_CLIENT_ERROR = CN_CLIENT_ERROR,			// Generic error from client. Must be a conception error.
 	CNE_CANNOT_FIND_ENDPOINT,					// The given endpoint couldn't be reached and no connection could be established.
+	CNE_CLIENT_CANNOT_RECEIVE,					// An error prevented the client socket to receive data.
+	CNE_CLIENT_CANNOT_SEND,						// An error prevented the client socket to send data.
 };
 
 void print_error_type(uint16_t error);

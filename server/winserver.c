@@ -39,7 +39,7 @@ CN_SOCKET_PTR server_init(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family)
 	}
 	error = bind(server, r->ai_addr, (int)r->ai_addrlen);
 	// SOCKET_ERROR for Windows
-	if (error == -1)
+	if (error)
 	{
 		server_error("bind failed with error: %d\n", WSAGetLastError());
 		freeaddrinfo(r);
@@ -54,6 +54,12 @@ CN_SOCKET_PTR server_init(CN_SOCKET* Socket, E_ADDRESS_FAMILY ai_family)
 
 static int server_accept(void* socket)
 {
+	LPWSADATA winSockData;
+	if (WSAStartup(MAKEWORD(2, 2), &winSockData))
+	{
+		server_error("Couldn't start WinSock on the socket thread: errocode: %d\n", WSAGetLastError());
+		return;
+	}
 	CN_SOCKET* Socket = socket;
 	if (!Socket)
 	{
@@ -65,12 +71,14 @@ static int server_accept(void* socket)
 	Socket->remote = CN_INVALID_SOCKET;
 	while (Socket->signal != CN_SERVER_SHUTDOWN)
 	{
-		mtx_lock(Socket->mutex);
 		struct cn_sockaddr_in* clientInfo = malloc(sizeof(struct cn_sockaddr_in));
+		if (!clientInfo)
+			thrd_exit(CNE_NOT_ENOUGH_MEMORY);
+		mtx_lock(Socket->mutex);
 		server_log("Waiting for a client to accept...\n");
 		// client socket acception
 		// TODO: fix access violation, writing on memory address 0xA
-		Socket->remote = accept(Socket->id, clientInfo, sizeof(*clientInfo));
+		Socket->remote = accept(Socket->id, clientInfo, 0);
 		mtx_unlock(Socket->mutex);
 		if (Socket->remote == CN_INVALID_SOCKET)
 			server_error("The server has been stopped.\n");
@@ -85,13 +93,7 @@ static int server_accept(void* socket)
 			);
 		}
 	}
-	mtx_lock(Socket->mutex);
-	int err;
-	if (err = closesocket(Socket->id))
-	{
-		server_error("The error %d has occured while shutting down socket %d running on port %d.\n", WSAGetLastError(), Socket->id, Socket->port);
-	};
-	mtx_unlock(Socket->mutex);
+	WSACleanup();
 	server_log("Socket %d running on port %d does not accept connections anymore and is shutting down...\n", Socket->id, Socket->port);
 	thrd_exit(0);
 	return 0;
@@ -110,8 +112,9 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 		WSACleanup();
 		return CNE_CANNOT_LISTEN_ON_PORT;
 	}
-	server_accept(Socket);
 	/*
+	server_accept(Socket);
+	*/
 	thrd_t listen_socket;
 	if (thrd_create(&listen_socket, &server_accept, (void*)Socket))
 	{
@@ -122,13 +125,54 @@ void server_listen(CN_SOCKET* Socket, uint64_t max_in_queue)
 	}
 	server_log("Main thread: Socket %d began listening on port %d\n", Socket->id, Socket->port);
 	thrd_detach(listen_socket);
-	*/
 }
 
 void server_shutdown(CN_SOCKET* Socket, CN_SERVER_SHUTDOWN_PROHIBITS prohibits)
 {
 	Socket->signal = CN_SERVER_SHUTDOWN;
+	mtx_lock(Socket->mutex);
+	int err = closesocket(Socket->id);
+	mtx_unlock(Socket->mutex);
+	if (err)
+	{
+		server_error("An error occured while shutting down the server: Code: %d\n", WSAGetLastError());
+	}
 	WSACleanup();
 	server_log("Server with id %llu has been successfully shut down.\n", Socket->id);
 	mtx_destroy(Socket->mutex);
+}
+
+int server_send(CN_SOCKET* Server, int8_t* buffer, uint64_t length)
+{
+	if(!Server)
+	{
+		server_log("An invalid socket / null pointer has been passed to send data. Thread terminated.\n");
+		thrd_exit(CNE_INVALID_SOCKET);
+	}
+	mtx_lock(Server->mutex);
+	int err = send(Server->id, buffer, length, 0);
+	mtx_unlock(Server->mutex);
+	if (err)
+	{
+		server_error("Couldn't send data. Thread terminated. Error code: %d\n", WSAGetLastError());
+		thrd_exit(CNE_SERVER_CANNOT_SEND);
+	}
+}
+
+int server_receive(CN_SOCKET* Server, int8_t* buffer, uint64_t capacity)
+{
+	if (!Server)
+	{
+		server_log("An invalid socket / null pointer has been passed to receive data. Thread termminated.\n");
+		thrd_exit(CNE_INVALID_SOCKET);
+	}
+	mtx_lock(Server->mutex);
+	int err = recv(Server->id, buffer, capacity, 0);
+	mtx_unlock(Server->mutex);
+	if (err)
+	{
+		server_error("An error occured while receiving data. Error code: %d\n", WSAGetLastError());
+		thrd_exit(CNE_SERVER_CANNOT_RECEIVE);
+	}
+	return 0;
 }

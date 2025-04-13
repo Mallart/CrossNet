@@ -31,6 +31,15 @@ typedef enum SERVER_SIGNAL
 	CN_SERVER_SHUTDOWN, // Telling the server it has to shutdown
 } CN_SERVER_SIGNAL;
 
+typedef enum SERVER_RECEIVE_FLAG
+{
+	CN_SRF_MSG_OOB,				/* process out-of-band data */
+	CN_SRF_MSG_PEEK,			/* peek at incoming message */
+	CN_SRF_MSG_DONTROUTE = 4,	/* send without using routing tables */
+
+	CN_SRF_MSG_WAITALL = 0x8,
+} CN_SERVER_RECEIVE_FLAG;
+
 struct 
 {
 	FILE* server_stream;
@@ -47,7 +56,10 @@ void server_setup_log(FILE* stream, FILE* error_stream);
 void server_shutdown(CN_SOCKET* Socket, CN_SERVER_SHUTDOWN_PROHIBITS prohibits);
 
 // TODO: send data and receive data
-
+/* Sends data to a connected remote socket, if defined. */
+int server_send(CN_SOCKET* Server, int8_t* buffer, uint64_t length);
+/* Receives data from a remote socket. must tell the buffer capacity in bytes. */
+int server_receive(CN_SOCKET* Server, int8_t* buffer, uint64_t capacity);
 
 /* Logs a message in the server log */
 void server_log(const char* const Format, ...);

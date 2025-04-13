@@ -1,6 +1,15 @@
 #ifndef CN_DEFS
 #define CN_DEFS
 
+/*
+* CrossNet version can be read as R.M.P, where R is Release, M Major, and P patch.
+For instance, 1.2.45 is the first release version, 2nd major update, patch number 45 (45 patches since last major).
+*/
+#define CN_VER "0.0.1"
+#define CN_VER_REL 0
+#define CN_VER_MAJ 0
+#define CN_VER_PAT 1
+
 #pragma warning(disable:4068)
 #define _UCRT_DISABLED_WARNINGS 4324 _UCRT_DISABLED_WARNING_4412 4514 4574 4710 4793 4820 4995 4996 28719 28726 28727 _UCRT_EXTRA_DISABLED_WARNINGS
 #define _UCRT_DISABLED_WARNING_4412 
